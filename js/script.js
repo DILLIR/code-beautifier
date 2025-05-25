@@ -394,6 +394,110 @@ if (exportPngButton) {
     exportPngButton.addEventListener('click', exportAsPng);
 }
 
+const exportSvgButton = document.getElementById('export-svg-button');
+// codePreviewContainer is already defined
+
+// Function to export code block as SVG
+function exportAsSvg() {
+    if (!codePreviewContainer || typeof domtoimage === 'undefined') {
+        console.error('Required element (codePreviewContainer) or domtoimage library not found for SVG export.');
+        alert('Could not export as SVG. Ensure dom-to-image-more is loaded.');
+        return;
+    }
+
+    // Options for domtoimage.toSvg
+    // Most options like scale are more for raster. For SVG, it's mostly about element filtering.
+    const options = {
+        // filter: (node) => { /* return false to exclude node */ return true; },
+        // bgcolor: '#FFFFFF' // If a specific background is needed for elements that might be transparent
+        // quality: 1 // Not directly for SVG but good practice for other methods
+    };
+
+    const originalButtonText = exportSvgButton.textContent;
+    exportSvgButton.textContent = 'Exporting...';
+    exportSvgButton.disabled = true;
+
+    domtoimage.toSvg(codePreviewContainer, options)
+        .then(function (dataUrl) {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = dataUrl;
+            downloadLink.download = 'code_snapshot.svg';
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            exportSvgButton.textContent = originalButtonText;
+            exportSvgButton.disabled = false;
+        })
+        .catch(function (error) {
+            console.error('Error exporting to SVG with dom-to-image-more:', error);
+            alert('An error occurred while exporting to SVG. Please check the console for details.');
+            exportSvgButton.textContent = originalButtonText;
+            exportSvgButton.disabled = false;
+        });
+}
+
+if (exportSvgButton) {
+    exportSvgButton.addEventListener('click', exportAsSvg);
+}
+
+// Modal Functionality
+const modalTriggerButtons = document.querySelectorAll('.modal-trigger-button');
+const modals = document.querySelectorAll('.modal');
+const modalCloseButtons = document.querySelectorAll('.modal-close-button');
+
+let currentlyOpenModal = null; // Track the currently open modal
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+        currentlyOpenModal = modal;
+    }
+}
+
+function closeModal(modal) {
+    if (modal) {
+        modal.style.display = 'none';
+        if (currentlyOpenModal === modal) {
+            currentlyOpenModal = null;
+        }
+    }
+}
+
+modalTriggerButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const modalId = button.id.replace('open-', '') + '-modal'; // e.g., "open-font-settings" -> "font-settings-modal"
+        openModal(modalId);
+    });
+});
+
+modalCloseButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const modalId = button.dataset.modalId;
+        const modalToClose = document.getElementById(modalId);
+        closeModal(modalToClose);
+    });
+});
+
+// Close modal by clicking on the backdrop
+modals.forEach(modal => {
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) { // Check if the click is directly on the modal backdrop
+            closeModal(modal);
+        }
+    });
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && currentlyOpenModal) {
+        closeModal(currentlyOpenModal);
+    }
+});
+
+
 // Initial highlighting and theme application on load
 document.addEventListener('DOMContentLoaded', () => {
     applySavedTheme(); // Website theme (dark/light)
