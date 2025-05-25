@@ -267,9 +267,9 @@ body.dark-mode .code-preview-shadow {
     height: 100%;
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity for backdrop */
-    display: flex; /* Using flex to center content */
-    justify-content: center;
-    align-items: center;
+    /* display: flex; /* This will be set by JS when modal is active */
+    justify-content: center; /* Effective when display is flex */
+    align-items: center; /* Effective when display is flex */
 }
 
 .modal-content {
