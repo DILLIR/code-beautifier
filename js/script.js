@@ -196,7 +196,7 @@ function getPrettierParserOptions(language) {
         // case 'typescript':
         //     return { parser: 'typescript', plugins: prettierPlugins, printWidth: 80 };
         default:
-            if (language && language !== 'auto' && language !== 'plaintext') {
+            if (language && language !== 'auto' && language !== 'plaintext' && language !== 'java' && language !== 'csharp' && language !== 'python') {
                 // Attempting babel as a fallback for unrecognized but potentially similar languages
                 console.warn(`No specific Prettier parser for language "${language}". Attempting with Babel as a fallback.`);
                 return { parser: 'babel', plugins: prettierPlugins, printWidth: 80, isFallback: true };
