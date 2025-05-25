@@ -1,0 +1,91 @@
+:root {
+    --website-background-light: #ffffff;
+    --website-text-light: #333333;
+    --website-background-dark: #333333;
+    --website-text-dark: #ffffff;
+    --button-background: #eaeaea;
+    --button-text: #333333;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: var(--website-background-light);
+    color: var(--website-text-light);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: var(--website-background-dark);
+    color: var(--website-text-dark);
+}
+
+#theme-toggle {
+    padding: 10px 15px;
+    border: 1px solid var(--button-text);
+    background-color: var(--button-background);
+    color: var(--button-text);
+    cursor: pointer;
+}
+
+/* Specific styles for dark mode button if needed */
+body.dark-mode #theme-toggle {
+    /* Example: Invert button colors in dark mode */
+    background-color: var(--website-text-dark); /* Using text color for bg */
+    color: var(--website-background-dark); /* Using bg color for text */
+    border-color: var(--website-background-dark);
+}
+
+main {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+}
+
+#code-input {
+    width: 50%;
+    height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 14px;
+    resize: vertical; /* Allow vertical resizing */
+}
+
+#code-preview-container {
+    width: 50%;
+    height: 300px; /* Match textarea or make it auto */
+    background-color: #f4f4f4; /* Default light background for preview */
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow: auto; /* Add scrollbars if content overflows */
+    white-space: pre-wrap; /* Preserve whitespace and wrap lines */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+#code-output {
+    font-family: 'Courier New', Courier, monospace; /* Monospaced font */
+    font-size: 14px;
+    display: block; /* Ensure it takes up the pre's padding correctly */
+}
+
+body.dark-mode #code-input {
+    background-color: #2d2d2d;
+    color: #f1f1f1;
+    border-color: #555;
+}
+
+body.dark-mode #code-preview-container {
+    background-color: #1e1e1e; /* Dark background for preview in dark mode */
+    border-color: #555;
+    color: #f1f1f1; /* Ensure text in preview is visible in dark mode */
+}
+
+.code-preview-shadow {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+/* Optional: Lighter shadow for dark mode if the above is too strong */
+body.dark-mode .code-preview-shadow {
+    box-shadow: 0 10px 20px rgba(255,255,255,0.07), 0 6px 6px rgba(255,255,255,0.1);
+}
