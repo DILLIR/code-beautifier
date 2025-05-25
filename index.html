@@ -14,86 +14,109 @@
     <script src="https://unpkg.com/prettier@2.8.8/parser-postcss.js"></script> <!-- Handles CSS, Less, SCSS -->
     <!-- html2canvas CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- dom-to-image-more CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image-more/2.9.5/dom-to-image-more.min.js"></script>
 </head>
 <body>
     <header>
         <h1>Code Previewer</h1>
-        <div class="controls">
-            <section id="theme-controls">
-                <h2>Theme</h2>
-                <button id="theme-toggle">Toggle Theme</button>
-            </section>
-            <section id="code-block-controls">
-                <h2>Code Block</h2>
-                <div class="control-group">
-                    <label for="syntax-theme-select">Syntax Theme:</label>
-                    <select id="syntax-theme-select">
-                        <option value="atom-one-dark.min.css">Atom One Dark</option>
-                        <option value="github.min.css">GitHub</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label for="language-select">Language:</label>
-                    <select id="language-select">
-                        <option value="plaintext">Plaintext</option>
-                        <option value="auto">Auto Detect</option>
-                        <option value="javascript">JavaScript</option>
-                        <option value="python">Python</option>
-                        <option value="xml">HTML</option>
-                        <option value="css">CSS</option>
-                        <option value="java">Java</option>
-                        <option value="cpp">C++</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label for="code-bg-color-picker">Background Color:</label>
-                    <input type="color" id="code-bg-color-picker" value="#f4f4f4">
-                </div>
-                <div class="control-group">
-                    <label for="code-padding-input">Padding (px):</label>
-                    <input type="number" id="code-padding-input" value="20" min="0" max="100">
-                </div>
-                <div class="control-group">
-                    <input type="checkbox" id="shadow-toggle">
-                    <label for="shadow-toggle">Enable Drop Shadow</label>
-                </div>
-                <div class="control-group">
-                    <label for="font-size-input">Font Size (px):</label>
-                    <input type="number" id="font-size-input" value="14" min="8" max="32">
-                </div>
-                <div class="control-group">
-                    <label for="font-family-select">Font Family:</label>
-                    <select id="font-family-select">
-                        <option value='Consolas, "Courier New", monospace'>Consolas, Courier New</option>
-                        <option value='"Lucida Console", Monaco, monospace'>Lucida Console, Monaco</option>
-                        <option value='"Fira Code", monospace'>Fira Code</option>
-                        <option value="monospace">Monospace (generic)</option>
-                        <option value="sans-serif">Sans-serif (generic)</option>
-                    </select>
-                </div>
-            </section>
-            <section id="action-controls">
-                    <option value="vs2015.min.css">Visual Studio 2015</option>
-                <h2>Actions</h2>
-                <button id="prettify-code-button">Prettify Code</button>
-            </section>
-            <section id="export-controls">
-                <h2>Export</h2>
-                <button id="export-png-button">Export as PNG</button>
-                <div class="control-group">
-                    <label for="png-scale-input">Scale:</label>
-                    <input type="number" id="png-scale-input" value="2" min="1" max="5">
-                </div>
-                <!-- Placeholder for export to SVG button -->
-                <div id="export-svg-placeholder">Export to SVG Button</div>
-            </section>
-        </div>
     </header>
+    <div class="toolbar">
+        <div class="toolbar-group website-settings">
+            <button id="theme-toggle" title="Toggle Dark/Light Theme">Toggle Theme</button>
+        </div>
+        <div class="toolbar-group code-core-settings">
+            <div class="control-group">
+                <label for="language-select">Language:</label>
+                <select id="language-select" title="Select Code Language">
+                    <option value="plaintext">Plaintext</option>
+                    <option value="auto">Auto Detect</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="xml">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="syntax-theme-select">Syntax Theme:</label>
+                <select id="syntax-theme-select" title="Select Syntax Theme">
+                    <option value="atom-one-dark.min.css">Atom One Dark</option>
+                    <option value="github.min.css">GitHub</option>
+                    <option value="vs2015.min.css">Visual Studio 2015</option>
+                    <option value="stackoverflow-light.min.css">Stack Overflow Light</option>
+                    <option value="stackoverflow-dark.min.css">Stack Overflow Dark</option>
+                    <option value="night-owl.min.css">Night Owl</option>
+                    <option value="solarized-light.min.css">Solarized Light</option>
+                    <option value="solarized-dark.min.css">Solarized Dark</option>
+                    <option value="agate.min.css">Agate</option>
+                    <option value="monokai-sublime.min.css">Monokai Sublime</option>
+                </select>
+            </div>
+        </div>
+        <div class="toolbar-group modal-triggers">
+            <button id="open-appearance-settings-modal" class="modal-trigger-button" title="Open Appearance Settings">Appearance</button>
+            <button id="open-font-settings-modal" class="modal-trigger-button" title="Open Font Settings">Font</button>
+        </div>
+        <div class="toolbar-group code-actions">
+            <button id="prettify-code-button" title="Format Code with Prettier">Prettify</button>
+        </div>
+        <div class="toolbar-group export-settings">
+            <button id="export-png-button" title="Export as PNG">Export PNG</button>
+            <div class="control-group">
+                <label for="png-scale-input">Scale:</label>
+                <input type="number" id="png-scale-input" value="2" min="1" max="5" title="PNG Export Scale">
+            </div>
+            <button id="export-svg-button" title="Export as SVG">Export SVG</button>
+        </div>
+    </div>
 
     <main>
         <textarea id="code-input" placeholder="Enter your code here..."></textarea>
         <pre id="code-preview-container"><code id="code-output" class="language-plaintext"></code></pre>
     </main>
+
+    <!-- Modals -->
+    <div id="appearance-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button" data-modal-id="appearance-settings-modal" title="Close Settings">&times;</span>
+            <h2>Appearance Settings</h2>
+            <div class="control-group">
+                <label for="code-bg-color-picker">Background Color:</label>
+                <input type="color" id="code-bg-color-picker" value="#f4f4f4" title="Code Background Color">
+            </div>
+            <div class="control-group">
+                <label for="code-padding-input">Padding (px):</label>
+                <input type="number" id="code-padding-input" value="20" min="0" max="100" title="Code Padding (px)">
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="shadow-toggle" title="Toggle Drop Shadow">
+                <label for="shadow-toggle">Enable Drop Shadow</label>
+            </div>
+        </div>
+    </div>
+
+    <div id="font-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button" data-modal-id="font-settings-modal" title="Close Settings">&times;</span>
+            <h2>Font Settings</h2>
+            <div class="control-group">
+                <label for="font-size-input">Font Size (px):</label>
+                <input type="number" id="font-size-input" value="14" min="8" max="32" title="Font Size (px)">
+            </div>
+            <div class="control-group">
+                <label for="font-family-select">Font Family:</label>
+                <select id="font-family-select" title="Select Font Family">
+                    <option value='Consolas, "Courier New", monospace'>Consolas, Courier New</option>
+                    <option value='"Lucida Console", Monaco, monospace'>Lucida Console, Monaco</option>
+                    <option value='"Fira Code", monospace'>Fira Code</option>
+                    <option value="monospace">Monospace (generic)</option>
+                    <option value="sans-serif">Sans-serif (generic)</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
     <script src="js/script.js" defer></script>
     <script src="js/tests.js" defer></script>

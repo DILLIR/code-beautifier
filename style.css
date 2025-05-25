@@ -19,6 +19,10 @@
     --control-spacing: 10px;
 }
 
+html {
+    height: 100%;
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -27,7 +31,7 @@ body {
     transition: background-color 0.3s, color 0.3s;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100%; /* Changed from min-height to height */
 }
 
 body.dark-mode {
@@ -39,7 +43,7 @@ body.dark-mode {
 }
 
 header {
-    padding: 20px;
+    padding: 10px 20px; /* Reduced top/bottom padding */
     border-bottom: 1px solid var(--control-border-light);
     background-color: var(--control-panel-bg-light);
 }
@@ -50,110 +54,125 @@ body.dark-mode header {
 }
 
 header h1 {
-    margin: 0 0 20px 0;
+    margin: 0; /* Removed bottom margin */
     text-align: center;
-    font-size: 2em;
+    font-size: 1.8em; /* Slightly reduced font size */
 }
 
-.controls {
+/* Toolbar Styles */
+.toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--control-spacing);
-    justify-content: center;
+    align-items: center;
+    padding: 8px 10px; /* Reduced top/bottom padding */
+    background-color: var(--control-panel-bg-light);
+    border-bottom: 1px solid var(--control-border-light);
+    gap: 8px; /* Reduced gap between toolbar groups */
 }
 
-.controls section {
-    padding: var(--section-padding);
-    border: 1px solid var(--control-border-light);
-    border-radius: 8px;
-    background-color: var(--website-background-light); /* Sections stand out slightly from header bg */
-    margin-bottom: var(--control-spacing); /* Ensure spacing when wrapped */
+body.dark-mode .toolbar {
+    background-color: var(--control-panel-bg-dark);
+    border-bottom: 1px solid var(--control-border-dark);
 }
 
-body.dark-mode .controls section {
-    border-color: var(--control-border-dark);
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allow controls within a group to wrap if necessary */
+    gap: 8px; /* Spacing for items within a group */
+    padding: 5px 10px;
+    /* border: 1px solid var(--control-border-light); */ /* Removed border */
+    border-radius: 6px;
+    background-color: var(--website-background-light); /* Slight contrast with toolbar bg */
+}
+
+body.dark-mode .toolbar-group {
+    /* border-color: var(--control-border-dark); */ /* Removed border */
     background-color: var(--website-background-dark);
 }
 
-.controls section h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-    border-bottom: 1px solid var(--control-border-light);
-    padding-bottom: 5px;
+/* Styling for controls within the toolbar */
+.toolbar .control-group { /* Re-using .control-group for label-input pairs */
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Smaller gap for compact toolbar */
+    margin-bottom: 0; /* Handled by toolbar-group gap or direct control margin */
 }
 
-body.dark-mode .controls section h2 {
-    border-bottom-color: var(--control-border-dark);
+.toolbar label {
+    font-weight: normal; /* Lighter labels in toolbar */
+    margin-bottom: 0; /* Remove bottom margin from general control styles */
+    font-size: 0.9em; /* Slightly smaller labels */
+    color: var(--website-text-light);
 }
-
-/* Generic styles for controls inside sections */
-.controls label,
-.controls input,
-.controls select,
-.controls button {
-    display: block;
-    margin-bottom: var(--control-spacing);
-    width: 100%; /* Default to full width, can be adjusted */
-    box-sizing: border-box;
-}
-
-.controls input[type="checkbox"] {
-    width: auto; /* Checkboxes shouldn't be full width */
-    margin-right: 5px; /* Space between checkbox and label text if label is not wrapping it */
+body.dark-mode .toolbar label {
+    color: var(--website-text-dark);
 }
 
 
-.controls label {
-    font-weight: bold;
-    margin-bottom: 5px; /* Less space after label, more after input */
-}
-
-.controls input[type="number"],
-.controls input[type="color"],
-.controls select,
-.controls button {
-    padding: 10px;
+.toolbar input[type="number"],
+.toolbar input[type="color"],
+.toolbar select,
+.toolbar button {
+    padding: 6px 10px; /* More compact padding */
+    font-size: 0.9em; /* Slightly smaller font for controls */
     border: 1px solid var(--input-border-light);
     border-radius: 4px;
     background-color: var(--input-bg-light);
     color: var(--website-text-light);
+    margin-bottom: 0; /* Reset margin from general control styles */
 }
 
-body.dark-mode .controls input[type="number"],
-body.dark-mode .controls input[type="color"],
-body.dark-mode .controls select,
-body.dark-mode .controls button {
+body.dark-mode .toolbar input[type="number"],
+body.dark-mode .toolbar input[type="color"],
+body.dark-mode .toolbar select,
+body.dark-mode .toolbar button {
     border-color: var(--input-border-dark);
     background-color: var(--input-bg-dark);
     color: var(--website-text-dark);
 }
 
-.controls button {
+.toolbar button {
     background-color: var(--button-background);
     color: var(--button-text);
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
-.controls button:hover {
+.toolbar button:hover {
     background-color: var(--button-hover-bg-light);
 }
 
-body.dark-mode .controls button:hover {
+body.dark-mode .toolbar button:hover {
     background-color: var(--button-hover-bg-dark);
 }
 
-
-#theme-toggle { /* Already had specific ID styling, adapt it slightly */
-    /* padding: 10px 15px; keep from .controls button */
-    /* border: 1px solid var(--button-text); keep from .controls button */
-    /* background-color: var(--button-background); keep from .controls button */
-    /* color: var(--button-text); keep from .controls button */
-    /* cursor: pointer; keep from .controls button */
+.toolbar input[type="checkbox"] {
+    width: auto;
+    margin-right: 4px; /* Adjust spacing for checkbox */
+    margin-bottom: 0;
+}
+.toolbar input[type="checkbox"] + label { /* For labels next to checkboxes in toolbar */
+    font-weight: normal;
+    font-size: 0.9em;
+    width: auto;
 }
 
-/* Specific styles for dark mode button if needed */
+
+/* Specific adjustments for some toolbar elements if needed */
+.toolbar input[type="number"] {
+    max-width: 80px; /* More compact number inputs */
+}
+.toolbar input[type="color"] {
+    max-width: 50px; /* Compact color picker */
+    padding: 3px; /* Adjust padding for color picker */
+}
+
+#theme-toggle {
+    /* Existing specific styles for theme-toggle are fine,
+       padding/font-size will be overridden by .toolbar button */
+}
+
 body.dark-mode #theme-toggle {
     background-color: var(--website-text-dark); /* Using text color for bg */
     color: var(--website-background-dark); /* Using bg color for text */
@@ -164,36 +183,14 @@ body.dark-mode #theme-toggle:hover {
     background-color: #f0f0f0; /* Lighter hover for this specific inverted button */
 }
 
-/* Allow certain controls to not take full width */
-.controls .control-group {
-    display: flex;
-    align-items: center; /* Vertically align label and input if they are side-by-side */
-    gap: 8px; /* Space between items in the group */
-    margin-bottom: var(--control-spacing);
-}
 
-.controls .control-group label {
-    width: auto; /* Let label take its content width */
-    margin-bottom: 0; /* Reset bottom margin as it's now part of a flex group */
-    font-weight: normal; /* Making labels in groups not bold to save space / look cleaner */
-}
-
-.controls .control-group input,
-.controls .control-group select {
-    width: auto; /* Let input take its natural width or a specific size */
-    flex-grow: 1; /* Allow input to grow if there's space */
-    margin-bottom: 0; /* Reset bottom margin */
-}
-
-/* Specific small inputs */
-.controls input[type="number"],
-.controls input[type="color"] { /* Color picker usually has a fixed sensible size */
-    max-width: 150px; /* Example: constrain width of number/color inputs */
-}
-.controls input[type="checkbox"] + label { /* For labels next to checkboxes */
-    font-weight: normal;
-    width: auto;
-}
+/* Remove old .controls and section specific styling */
+/* .controls, .controls section, .controls section h2, etc. are no longer used
+   and their styles can be removed or commented out if they conflict.
+   The generic .controls label, input, etc. styles are now scoped under .toolbar
+   or specific IDs if still needed.
+*/
+/* The styles for .controls .control-group and its children are adapted for .toolbar .control-group */
 
 
 main {
@@ -202,6 +199,7 @@ main {
     gap: 20px;
     flex-grow: 1; /* Main area takes remaining vertical space */
     /* height: calc(100vh - 200px); Removed this, flex-grow should handle it */
+    padding: 10px 20px; /* Reduced top/bottom padding */
 }
 
 #code-input {
@@ -256,4 +254,123 @@ body.dark-mode #code-preview-container {
 /* Optional: Lighter shadow for dark mode if the above is too strong */
 body.dark-mode .code-preview-shadow {
     box-shadow: 0 10px 20px rgba(255,255,255,0.07), 0 6px 6px rgba(255,255,255,0.1);
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity for backdrop */
+    display: flex; /* Using flex to center content */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--website-background-light);
+    color: var(--website-text-light);
+    margin: auto; /* Auto margins for centering, though flex handles it */
+    padding: 20px;
+    border: 1px solid var(--control-border-light);
+    border-radius: 8px;
+    width: 80%; /* Could be more specific, e.g., 400px */
+    max-width: 500px; /* Max width */
+    position: relative;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+body.dark-mode .modal-content {
+    background-color: var(--website-background-dark);
+    color: var(--website-text-dark);
+    border-color: var(--control-border-dark);
+}
+
+.modal-close-button {
+    color: var(--website-text-light);
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+body.dark-mode .modal-close-button {
+    color: var(--website-text-dark);
+}
+
+.modal-close-button:hover,
+.modal-close-button:focus {
+    color: #f00; /* Red on hover for close */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--control-border-light);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+body.dark-mode .modal-content h2 {
+    border-bottom-color: var(--control-border-dark);
+}
+
+/* Controls inside modals - they use .control-group from HTML */
+.modal .control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px; /* Spacing between control groups in modal */
+}
+
+.modal .control-group label {
+    font-weight: bold; /* Bolder labels in modal vs toolbar */
+    font-size: 1em; /* Regular font size for modal labels */
+    width: auto; /* Label takes its own width */
+    color: var(--website-text-light);
+}
+body.dark-mode .modal .control-group label {
+    color: var(--website-text-dark);
+}
+
+
+.modal .control-group input[type="number"],
+.modal .control-group input[type="color"],
+.modal .control-group select {
+    padding: 8px 10px; /* Slightly larger padding than toolbar for easier interaction */
+    font-size: 1em;
+    border: 1px solid var(--input-border-light);
+    border-radius: 4px;
+    background-color: var(--input-bg-light);
+    color: var(--website-text-light);
+    flex-grow: 1; /* Input takes remaining space */
+    max-width: none; /* Override toolbar's max-width for number inputs if needed */
+}
+
+body.dark-mode .modal .control-group input[type="number"],
+body.dark-mode .modal .control-group input[type="color"],
+body.dark-mode .modal .control-group select {
+    border-color: var(--input-border-dark);
+    background-color: var(--input-bg-dark);
+    color: var(--website-text-dark);
+}
+
+.modal .control-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+}
+.modal .control-group input[type="checkbox"] + label {
+    font-weight: normal; /* Label next to checkbox can be normal weight */
+    font-size: 1em;
+}
+
+/* Modal trigger buttons can use default .toolbar button styles or have specific ones */
+.modal-trigger-button {
+    /* Uses .toolbar button styles by default */
 }
