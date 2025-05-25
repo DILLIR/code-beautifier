@@ -361,33 +361,43 @@ function exportAsPng() {
     };
 
     // Show a temporary loading indicator (optional)
-    // For example, change button text
     const originalButtonText = exportPngButton.textContent;
     exportPngButton.textContent = 'Exporting...';
     exportPngButton.disabled = true;
 
-    html2canvas(codePreviewContainer, options).then(canvas => {
-        const imageDataUrl = canvas.toDataURL('image/png');
+    // Temporarily adjust height for clipping
+    const originalHeight = codePreviewContainer.style.height;
+    const originalOverflow = codePreviewContainer.style.overflow;
+    const codeScrollHeight = codeOutput.scrollHeight;
+    const computedStyle = window.getComputedStyle(codePreviewContainer);
+    const paddingTop = parseFloat(computedStyle.paddingTop);
+    const paddingBottom = parseFloat(computedStyle.paddingBottom);
+    const desiredHeight = codeScrollHeight + paddingTop + paddingBottom;
+    
+    codePreviewContainer.style.height = desiredHeight + 'px';
+    codePreviewContainer.style.overflow = 'hidden'; // Temporarily hide scrollbar
 
-        const downloadLink = document.createElement('a');
-        downloadLink.href = imageDataUrl;
-        downloadLink.download = 'code_snapshot.png'; // Filename for the download
-
-        document.body.appendChild(downloadLink); // Required for Firefox
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-
-        // Restore button
-        exportPngButton.textContent = originalButtonText;
-        exportPngButton.disabled = false;
-
-    }).catch(error => {
-        console.error('Error exporting to PNG with html2canvas:', error);
-        alert('An error occurred while exporting to PNG. Please check the console for details.');
-        // Restore button
-        exportPngButton.textContent = originalButtonText;
-        exportPngButton.disabled = false;
-    });
+    html2canvas(codePreviewContainer, options)
+        .then(canvas => {
+            const imageDataUrl = canvas.toDataURL('image/png');
+            const downloadLink = document.createElement('a');
+            downloadLink.href = imageDataUrl;
+            downloadLink.download = 'code_snapshot.png';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        })
+        .catch(error => {
+            console.error('Error exporting to PNG with html2canvas:', error);
+            alert('An error occurred while exporting to PNG. Please check the console for details.');
+        })
+        .finally(() => {
+            // Restore original height and button state
+            codePreviewContainer.style.height = originalHeight;
+            codePreviewContainer.style.overflow = originalOverflow;
+            exportPngButton.textContent = originalButtonText;
+            exportPngButton.disabled = false;
+        });
 }
 
 if (exportPngButton) {
@@ -395,44 +405,53 @@ if (exportPngButton) {
 }
 
 const exportSvgButton = document.getElementById('export-svg-button');
-// codePreviewContainer is already defined
+// codePreviewContainer and codeOutput are already defined
 
 // Function to export code block as SVG
 function exportAsSvg() {
-    if (!codePreviewContainer || typeof domtoimage === 'undefined') {
-        console.error('Required element (codePreviewContainer) or domtoimage library not found for SVG export.');
+    if (!codePreviewContainer || !codeOutput || typeof domtoimage === 'undefined') {
+        console.error('Required elements or domtoimage library not found for SVG export.');
         alert('Could not export as SVG. Ensure dom-to-image-more is loaded.');
         return;
     }
 
-    // Options for domtoimage.toSvg
-    // Most options like scale are more for raster. For SVG, it's mostly about element filtering.
     const options = {
-        // filter: (node) => { /* return false to exclude node */ return true; },
-        // bgcolor: '#FFFFFF' // If a specific background is needed for elements that might be transparent
-        // quality: 1 // Not directly for SVG but good practice for other methods
+        // Options for domtoimage.toSvg
     };
 
     const originalButtonText = exportSvgButton.textContent;
     exportSvgButton.textContent = 'Exporting...';
     exportSvgButton.disabled = true;
 
+    // Temporarily adjust height for clipping
+    const originalHeight = codePreviewContainer.style.height;
+    const originalOverflow = codePreviewContainer.style.overflow;
+    const codeScrollHeight = codeOutput.scrollHeight;
+    const computedStyle = window.getComputedStyle(codePreviewContainer);
+    const paddingTop = parseFloat(computedStyle.paddingTop);
+    const paddingBottom = parseFloat(computedStyle.paddingBottom);
+    const desiredHeight = codeScrollHeight + paddingTop + paddingBottom;
+
+    codePreviewContainer.style.height = desiredHeight + 'px';
+    codePreviewContainer.style.overflow = 'hidden'; // Temporarily hide scrollbar
+
     domtoimage.toSvg(codePreviewContainer, options)
         .then(function (dataUrl) {
             const downloadLink = document.createElement('a');
             downloadLink.href = dataUrl;
             downloadLink.download = 'code_snapshot.svg';
-
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
-
-            exportSvgButton.textContent = originalButtonText;
-            exportSvgButton.disabled = false;
         })
         .catch(function (error) {
             console.error('Error exporting to SVG with dom-to-image-more:', error);
             alert('An error occurred while exporting to SVG. Please check the console for details.');
+        })
+        .finally(() => {
+            // Restore original height and button state
+            codePreviewContainer.style.height = originalHeight;
+            codePreviewContainer.style.overflow = originalOverflow;
             exportSvgButton.textContent = originalButtonText;
             exportSvgButton.disabled = false;
         });
