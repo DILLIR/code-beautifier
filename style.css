@@ -226,6 +226,7 @@ main {
     white-space: pre-wrap; /* Preserve whitespace and wrap lines */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
     height: 100%; /* Fill parent height in main */
+    margin-top: 0px;
 }
 
 #code-output {

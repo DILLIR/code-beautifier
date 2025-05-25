@@ -487,7 +487,7 @@ function closeModal(modal) {
 
 modalTriggerButtons.forEach(button => {
     button.addEventListener('click', () => {
-        const modalId = button.id.replace('open-', '') + '-modal'; // e.g., "open-font-settings" -> "font-settings-modal"
+        const modalId = button.id.replace('open-', ''); // e.g., "open-font-settings" -> "font-settings-modal"
         openModal(modalId);
     });
 });
