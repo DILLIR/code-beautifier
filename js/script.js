@@ -176,33 +176,33 @@ const prettifyCodeButton = document.getElementById('prettify-code-button');
 function getPrettierParserOptions(language) {
     // Ensure prettier and prettierPlugins are loaded
     if (typeof prettier === 'undefined' || typeof prettierPlugins === 'undefined') {
-        console.error('Prettier or its plugins are not loaded.');
-        alert('Prettier library not loaded. Cannot format code.');
-        return null;
+        console.error('Prettier or its plugins are not loaded. Cannot format code.');
+        // In a test environment, prettier/prettierPlugins might be undefined.
+        // For tests, we might mock them or ensure tests run where they are loaded.
+        // For now, let's assume they are loaded if the function is called by the app.
+        // The test script will need to handle this.
+        return { error: "Prettier library not loaded." };
     }
 
     switch (language) {
         case 'javascript':
         case 'json': // Babel parser handles JSON
-            return { parser: 'babel', plugins: prettierPlugins };
+            return { parser: 'babel', plugins: prettierPlugins, printWidth: 80 };
         case 'xml': // HTML parser for XML/HTML
-            return { parser: 'html', plugins: prettierPlugins };
+            return { parser: 'html', plugins: prettierPlugins, printWidth: 80 };
         case 'css':
-            return { parser: 'css', plugins: prettierPlugins };
-        // Add cases for other languages and their specific Prettier parsers if more are added
-        // e.g., 'typescript' might need 'babel-ts' or a specific typescript parser
+            return { parser: 'css', plugins: prettierPlugins, printWidth: 80 };
+        // Add cases for other languages like typescript if parser is available
+        // case 'typescript':
+        //     return { parser: 'typescript', plugins: prettierPlugins, printWidth: 80 };
         default:
-            // Try a common default or indicate unsupported
-            // For many things, babel might work, but it's safer to be explicit.
-            // If 'auto' or 'plaintext' is selected, Prettier might not be suitable
-            // or a best-effort attempt can be made.
-            if (language !== 'auto' && language !== 'plaintext') {
+            if (language && language !== 'auto' && language !== 'plaintext') {
                 // Attempting babel as a fallback for unrecognized but potentially similar languages
-                console.warn(`No specific Prettier parser for language "${language}". Attempting with Babel.`);
-                return { parser: 'babel', plugins: prettierPlugins, printWidth: 80 };
+                console.warn(`No specific Prettier parser for language "${language}". Attempting with Babel as a fallback.`);
+                return { parser: 'babel', plugins: prettierPlugins, printWidth: 80, isFallback: true };
             }
-            alert(`Prettier does not support formatting for language: ${language}. Or select a specific language instead of 'auto' or 'plaintext'.`);
-            return null;
+            console.warn(`Prettier formatting is not supported for language: "${language}". Select a specific, supported language.`);
+            return { error: `Unsupported language for Prettier: ${language}` };
     }
 }
 
@@ -211,14 +211,25 @@ function formatCodeWithPrettier() {
 
     const code = codeInput.value;
     const selectedLanguage = languageSelect.value;
-    const prettierOptions = getPrettierParserOptions(selectedLanguage);
+    const prettierOptionsResult = getPrettierParserOptions(selectedLanguage);
 
-    if (!prettierOptions) {
-        return; // Parser not available or language not supported
+    if (prettierOptionsResult && prettierOptionsResult.error) {
+        alert(prettierOptionsResult.error); // Or handle error more gracefully
+        return;
+    }
+    
+    if (!prettierOptionsResult) { // Should not happen if error is always returned as object
+        alert("Could not determine Prettier parser options.");
+        return; 
     }
 
     try {
-        const formattedCode = prettier.format(code, prettierOptions);
+        // Ensure prettier is available (it's checked in getPrettierParserOptions but good practice)
+        if (typeof prettier === 'undefined') {
+            alert('Prettier library not loaded. Cannot format code.');
+            return;
+        }
+        const formattedCode = prettier.format(code, prettierOptionsResult);
         codeInput.value = formattedCode;
         // Trigger input event to update preview and highlighting
         codeInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -266,6 +277,123 @@ if (shadowToggle) {
     shadowToggle.addEventListener('change', toggleShadow);
 }
 
+const fontSizeInput = document.getElementById('font-size-input');
+const fontFamilySelect = document.getElementById('font-family-select');
+// codeOutput is already defined (the <code> element)
+
+// Function to apply saved font size
+function applySavedFontSize() {
+    const savedFontSize = localStorage.getItem('codeFontSize');
+    if (savedFontSize && codeOutput) {
+        codeOutput.style.fontSize = savedFontSize + 'px';
+        if (fontSizeInput) {
+            fontSizeInput.value = savedFontSize;
+        }
+    } else if (fontSizeInput && codeOutput) {
+        // Apply default from input if no saved value
+        codeOutput.style.fontSize = fontSizeInput.value + 'px';
+    }
+}
+
+// Function to change font size and save preference
+function changeFontSize() {
+    if (fontSizeInput && codeOutput) {
+        const selectedSize = fontSizeInput.value;
+        codeOutput.style.fontSize = selectedSize + 'px';
+        localStorage.setItem('codeFontSize', selectedSize);
+    }
+}
+
+// Function to apply saved font family
+function applySavedFontFamily() {
+    const savedFontFamily = localStorage.getItem('codeFontFamily');
+    if (savedFontFamily && codeOutput) {
+        codeOutput.style.fontFamily = savedFontFamily;
+        if (fontFamilySelect) {
+            fontFamilySelect.value = savedFontFamily;
+        }
+    } else if (fontFamilySelect && codeOutput) {
+        // Apply default from select if no saved value
+        codeOutput.style.fontFamily = fontFamilySelect.value;
+    }
+}
+
+// Function to change font family and save preference
+function changeFontFamily() {
+    if (fontFamilySelect && codeOutput) {
+        const selectedFamily = fontFamilySelect.value;
+        codeOutput.style.fontFamily = selectedFamily;
+        localStorage.setItem('codeFontFamily', selectedFamily);
+    }
+}
+
+if (fontSizeInput) {
+    fontSizeInput.addEventListener('input', changeFontSize);
+}
+
+if (fontFamilySelect) {
+    fontFamilySelect.addEventListener('change', changeFontFamily);
+}
+
+const exportPngButton = document.getElementById('export-png-button');
+const pngScaleInput = document.getElementById('png-scale-input');
+// codePreviewContainer is already defined
+
+// Function to export code block as PNG
+function exportAsPng() {
+    if (!codePreviewContainer || !pngScaleInput || typeof html2canvas === 'undefined') {
+        console.error('Required elements or html2canvas library not found for PNG export.');
+        alert('Could not export as PNG. Ensure html2canvas is loaded.');
+        return;
+    }
+
+    const scaleValue = parseFloat(pngScaleInput.value) || 2; // Default to 2 if input is invalid
+
+    // Options for html2canvas
+    const options = {
+        scale: scaleValue,
+        useCORS: true, // Helpful if any external resources were used (e.g. font files if not embedded by browser)
+        allowTaint: true, // Similar to useCORS
+        logging: false, // Can be true for debugging
+        // Ensure background is captured if the element itself has no explicit background
+        // but its parents do. Our code-preview-container has a background.
+        // backgroundColor: null, // Use null to capture transparent backgrounds, or specify a color
+    };
+
+    // Show a temporary loading indicator (optional)
+    // For example, change button text
+    const originalButtonText = exportPngButton.textContent;
+    exportPngButton.textContent = 'Exporting...';
+    exportPngButton.disabled = true;
+
+    html2canvas(codePreviewContainer, options).then(canvas => {
+        const imageDataUrl = canvas.toDataURL('image/png');
+
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageDataUrl;
+        downloadLink.download = 'code_snapshot.png'; // Filename for the download
+
+        document.body.appendChild(downloadLink); // Required for Firefox
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // Restore button
+        exportPngButton.textContent = originalButtonText;
+        exportPngButton.disabled = false;
+
+    }).catch(error => {
+        console.error('Error exporting to PNG with html2canvas:', error);
+        alert('An error occurred while exporting to PNG. Please check the console for details.');
+        // Restore button
+        exportPngButton.textContent = originalButtonText;
+        exportPngButton.disabled = false;
+    });
+}
+
+if (exportPngButton) {
+    exportPngButton.addEventListener('click', exportAsPng);
+}
+
 // Initial highlighting and theme application on load
 document.addEventListener('DOMContentLoaded', () => {
     applySavedTheme(); // Website theme (dark/light)
@@ -273,5 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applySavedCodeBgColor(); // Code block background color
     applySavedCodePadding(); // Code block padding
     applySavedShadowPreference(); // Code block shadow
+    applySavedFontSize(); // Code block font size
+    applySavedFontFamily(); // Code block font family
     highlightCode(); // Highlight any initial code
 });
